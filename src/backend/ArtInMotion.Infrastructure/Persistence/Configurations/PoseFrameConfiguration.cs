@@ -15,7 +15,7 @@ public sealed class PoseFrameConfiguration : IEntityTypeConfiguration<PoseFrame>
         builder.Property(pf => pf.Keypoints)
             .HasConversion(
                 v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => (JsonSerializer.Deserialize<List<Keypoint>>(v, (JsonSerializerOptions?)null) as IReadOnlyList<Keypoint>) ?? new List<Keypoint>())
+                v => JsonSerializer.Deserialize<List<Keypoint>>(v, (JsonSerializerOptions?)null) ?? new List<Keypoint>())
             .HasColumnType("TEXT");
     }
 }
