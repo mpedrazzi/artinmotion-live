@@ -1,0 +1,73 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+
+  &__hero {
+    text-align: center;
+    padding: 4rem 1rem;
+  }
+
+  &__title {
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 900;
+    margin: 0 0 1rem;
+    letter-spacing: -2px;
+    color: #fff;
+
+    span {
+      color: #00ff88;
+    }
+  }
+
+  &__subtitle {
+    font-size: 1.1rem;
+    color: #aaa;
+    max-width: 520px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  &__features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  &__feature {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    transition: border-color 0.2s;
+
+    &:hover {
+      border-color: rgba(0, 255, 136, 0.3);
+    }
+
+    h3 {
+      margin: 0.75rem 0 0.5rem;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #888;
+      line-height: 1.6;
+    }
+  }
+
+  &__feature-icon {
+    font-size: 2rem;
+  }
+}
