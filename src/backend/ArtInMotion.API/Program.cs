@@ -3,6 +3,7 @@ using ArtInMotion.Infrastructure;
 using ArtInMotion.Infrastructure.Persistence;
 using ArtInMotion.Infrastructure.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,7 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
