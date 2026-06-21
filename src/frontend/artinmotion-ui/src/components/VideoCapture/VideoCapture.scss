@@ -7,7 +7,7 @@
     position: relative;
     width: 100%;
     aspect-ratio: 16/9;
-    background: #111;
+    background: var(--color-bg-2);
     border-radius: 8px;
     overflow: hidden;
   }
@@ -25,7 +25,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #666;
+    color: var(--color-text-muted);
     font-size: 1rem;
   }
 
@@ -36,7 +36,7 @@
   }
 
   &__error {
-    color: #e74c3c;
+    color: var(--color-danger);
     font-size: 0.875rem;
     text-align: center;
   }

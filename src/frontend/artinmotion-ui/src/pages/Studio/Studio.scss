@@ -3,11 +3,11 @@
     font-size: 2rem;
     font-weight: 800;
     margin: 0 0 0.25rem;
-    color: #fff;
+    color: var(--color-text);
   }
 
   &__subtitle {
-    color: #888;
+    color: var(--color-text-muted);
     margin: 0 0 2rem;
   }
 
@@ -36,8 +36,8 @@
     flex-direction: column;
     gap: 1.25rem;
     padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 12px;
     height: fit-content;
   }
@@ -47,34 +47,70 @@
     align-items: center;
     gap: 0.75rem;
     font-size: 0.875rem;
-    color: #aaa;
+    color: var(--color-text-muted);
   }
 
   &__indicator {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #444;
+    background: var(--color-indicator);
     flex-shrink: 0;
 
     &--active {
-      background: #00ff88;
-      box-shadow: 0 0 8px #00ff8866;
+      background: var(--color-indicator-active);
+      box-shadow: 0 0 8px var(--color-indicator-active-glow);
     }
 
     &--tracking {
-      background: #ff4757;
-      box-shadow: 0 0 8px #ff475766;
+      background: var(--color-indicator-tracking);
+      box-shadow: 0 0 8px var(--color-indicator-tracking-glow);
+    }
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.35rem;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 0.6rem 0.875rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-text);
+    font-size: 0.875rem;
+    outline: none;
+    box-sizing: border-box;
+
+    &:focus {
+      border-color: var(--color-primary);
+    }
+
+    &::placeholder {
+      color: var(--color-text-muted);
+      opacity: 0.7;
     }
   }
 
   &__stream-id {
     font-size: 0.75rem;
-    color: #666;
+    color: var(--color-text-muted);
     word-break: break-all;
 
     code {
-      color: #00ff88;
+      color: var(--color-text-code);
     }
+  }
+
+  &__error {
+    font-size: 0.8rem;
+    color: var(--color-danger);
+    line-height: 1.4;
   }
 }

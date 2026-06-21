@@ -1,7 +1,7 @@
 import * as signalR from '@microsoft/signalr';
 import type { PoseFrame } from '../types';
 
-const HUB_URL = `${import.meta.env.VITE_API_URL ?? 'http://localhost:5000'}/hubs/pose`;
+const HUB_URL = `${(import.meta.env.VITE_API_URL ?? 'http://localhost:5000').replace(/\/$/, '')}/hubs/pose`;
 
 export class SignalRService {
   private connection: signalR.HubConnection;
