@@ -1,3 +1,4 @@
+import { FilesetResolver, PoseLandmarker } from '@mediapipe/tasks-vision';
 import type { Keypoint } from '../types';
 
 export interface PoseDetectionResult {
@@ -14,12 +15,33 @@ export interface IPoseTracker {
   dispose(): void;
 }
 
-/**
- * MediaPipe-based pose tracker.
- * Uses the MediaPipe Pose Landmarker loaded via CDN script tag.
- * Falls back to a stub when MediaPipe is not available.
- */
+// MediaPipe Pose Landmarker — 33 landmarks in order
+const LANDMARK_NAMES = [
+  'nose',
+  'left_eye_inner', 'left_eye', 'left_eye_outer',
+  'right_eye_inner', 'right_eye', 'right_eye_outer',
+  'left_ear', 'right_ear',
+  'mouth_left', 'mouth_right',
+  'left_shoulder', 'right_shoulder',
+  'left_elbow', 'right_elbow',
+  'left_wrist', 'right_wrist',
+  'left_pinky', 'right_pinky',
+  'left_index', 'right_index',
+  'left_thumb', 'right_thumb',
+  'left_hip', 'right_hip',
+  'left_knee', 'right_knee',
+  'left_ankle', 'right_ankle',
+  'left_heel', 'right_heel',
+  'left_foot_index', 'right_foot_index',
+];
+
+const WASM_URL =
+  'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm';
+const MODEL_URL =
+  'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
+
 export class MediaPipePoseTracker implements IPoseTracker {
+  private poseLandmarker: PoseLandmarker | null = null;
   private running = false;
   private animationFrameId: number | null = null;
   private videoElement: HTMLVideoElement | null = null;
@@ -27,10 +49,26 @@ export class MediaPipePoseTracker implements IPoseTracker {
 
   async initialize(videoElement: HTMLVideoElement): Promise<void> {
     this.videoElement = videoElement;
+    const vision = await FilesetResolver.forVisionTasks(WASM_URL);
+    const options = {
+      baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' as const },
+      runningMode: 'VIDEO' as const,
+      numPoses: 1,
+    };
+    try {
+      this.poseLandmarker = await PoseLandmarker.createFromOptions(vision, options);
+    } catch (gpuErr) {
+      // GPU delegate unavailable in this browser — fall back to CPU
+      console.warn('MediaPipe GPU delegate unavailable, falling back to CPU:', gpuErr);
+      this.poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
+        ...options,
+        baseOptions: { modelAssetPath: MODEL_URL, delegate: 'CPU' as const },
+      });
+    }
   }
 
   start(onPose: PoseCallback): void {
-    if (this.running || !this.videoElement) return;
+    if (this.running || !this.videoElement || !this.poseLandmarker) return;
     this.running = true;
     this.onPose = onPose;
     this.loop();
@@ -46,6 +84,8 @@ export class MediaPipePoseTracker implements IPoseTracker {
 
   dispose(): void {
     this.stop();
+    this.poseLandmarker?.close();
+    this.poseLandmarker = null;
     this.videoElement = null;
     this.onPose = null;
   }
@@ -53,31 +93,32 @@ export class MediaPipePoseTracker implements IPoseTracker {
   private loop(): void {
     if (!this.running) return;
     this.animationFrameId = requestAnimationFrame(() => {
-      const result = this.detectPose();
-      if (result && this.onPose) this.onPose(result);
+      this.detectAndEmit();
       this.loop();
     });
   }
 
-  private detectPose(): PoseDetectionResult | null {
-    // Stub: returns synthetic keypoints for demonstration.
-    // Replace with actual MediaPipe Pose Landmarker integration.
-    const t = performance.now();
-    const keypoints: Keypoint[] = [
-      { name: 'nose', x: 0.5, y: 0.1, z: 0, confidence: 0.99 },
-      { name: 'left_shoulder', x: 0.4, y: 0.3, z: 0, confidence: 0.95 },
-      { name: 'right_shoulder', x: 0.6, y: 0.3, z: 0, confidence: 0.95 },
-      { name: 'left_elbow', x: 0.35, y: 0.45, z: 0, confidence: 0.9 },
-      { name: 'right_elbow', x: 0.65, y: 0.45, z: 0, confidence: 0.9 },
-      { name: 'left_wrist', x: 0.3, y: 0.6, z: 0, confidence: 0.85 },
-      { name: 'right_wrist', x: 0.7, y: 0.6, z: 0, confidence: 0.85 },
-      { name: 'left_hip', x: 0.42, y: 0.55, z: 0, confidence: 0.97 },
-      { name: 'right_hip', x: 0.58, y: 0.55, z: 0, confidence: 0.97 },
-      { name: 'left_knee', x: 0.4, y: 0.72, z: 0, confidence: 0.92 },
-      { name: 'right_knee', x: 0.6, y: 0.72, z: 0, confidence: 0.92 },
-      { name: 'left_ankle', x: 0.38, y: 0.9, z: 0, confidence: 0.88 },
-      { name: 'right_ankle', x: 0.62, y: 0.9, z: 0, confidence: 0.88 },
-    ];
-    return { keypoints, timestampMs: Math.round(t) };
+  private detectAndEmit(): void {
+    const video = this.videoElement;
+    const landmarker = this.poseLandmarker;
+    if (!video || !landmarker || !this.onPose) return;
+    // Wait until the video has actual frames to process
+    if (video.readyState < 2 || video.paused || video.ended) return;
+
+    const nowMs = performance.now();
+    const result = landmarker.detectForVideo(video, nowMs);
+    if (result.landmarks.length === 0) return;
+
+    const keypoints: Keypoint[] = result.landmarks[0].map((lm, i) => ({
+      name: LANDMARK_NAMES[i] ?? `landmark_${i}`,
+      x: lm.x,
+      y: lm.y,
+      z: lm.z ?? 0,
+      confidence: lm.visibility ?? 1,
+    }));
+    if (import.meta.env.DEV && keypoints.length !== LANDMARK_NAMES.length) {
+      console.warn(`MediaPipe returned ${keypoints.length} landmarks but expected ${LANDMARK_NAMES.length}`);
+    }
+    this.onPose({ keypoints, timestampMs: Math.round(nowMs) });
   }
 }
