@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="ArtInMotion.API/ArtInMotion.API.csproj" />
+  <Project Path="ArtInMotion.Application/ArtInMotion.Application.csproj" />
+  <Project Path="ArtInMotion.Domain/ArtInMotion.Domain.csproj" />
+  <Project Path="ArtInMotion.Infrastructure/ArtInMotion.Infrastructure.csproj" />
+</Solution>

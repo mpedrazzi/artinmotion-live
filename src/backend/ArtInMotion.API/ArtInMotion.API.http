@@ -1,0 +1,6 @@
+@ArtInMotion.API_HostAddress = http://localhost:5139
+
+GET {{ArtInMotion.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

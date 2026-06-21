@@ -1,0 +1,107 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  // Blue primary
+  --color-primary: #3b82f6;
+  --color-primary-on: #fff;
+  --color-danger: #ef4444;
+
+  // Dark theme (default)
+  --color-bg: #080e1e;
+  --color-bg-2: #0f172a;
+  --color-surface: rgba(255, 255, 255, 0.04);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-text-code: #60a5fa;
+  --color-indicator: #334155;
+  --color-indicator-active: #3b82f6;
+  --color-indicator-active-glow: rgba(59, 130, 246, 0.45);
+  --color-indicator-tracking: #f59e0b;
+  --color-indicator-tracking-glow: rgba(245, 158, 11, 0.45);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-primary: #2563eb;
+    --color-danger: #dc2626;
+    --color-bg: #f0f5ff;
+    --color-bg-2: #ffffff;
+    --color-surface: rgba(37, 99, 235, 0.06);
+    --color-border: rgba(0, 0, 0, 0.1);
+    --color-text: #1e293b;
+    --color-text-muted: #64748b;
+    --color-text-code: #1d4ed8;
+    --color-indicator: #cbd5e1;
+    --color-indicator-active: #2563eb;
+    --color-indicator-active-glow: rgba(37, 99, 235, 0.35);
+    --color-indicator-tracking: #d97706;
+    --color-indicator-tracking-glow: rgba(217, 119, 6, 0.35);
+  }
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.15s, transform 0.1s;
+
+  &:hover:not(:disabled) {
+    opacity: 0.88;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background: var(--color-primary);
+    color: var(--color-primary-on);
+  }
+
+  &--danger {
+    background: var(--color-danger);
+    color: #fff;
+  }
+
+  &--outline {
+    background: transparent;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+
+    &:hover:not(:disabled) {
+      border-color: var(--color-primary);
+      opacity: 1;
+    }
+  }
+
+  &--lg {
+    padding: 0.8rem 1.75rem;
+    font-size: 1rem;
+  }
+}
